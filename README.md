@@ -1,5 +1,9 @@
 # yahoo-fantasy-mcp
 
+[![CI](https://github.com/brettadams0/yahoo-fantasy-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/brettadams0/yahoo-fantasy-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](package.json)
+
 An MCP server over Yahoo Fantasy Sports, backed by a self-owned Yahoo Developer
 OAuth2 app. Read-only — it reports on leagues, rosters, and matchups but does not
 set lineups or make transactions.
