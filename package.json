@@ -1,9 +1,8 @@
 {
-  "name": "yahoo-fantasy-mcp",
+  "name": "@brettadams0/yahoo-fantasy-mcp",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
-  "description": "Personal MCP server for Yahoo Fantasy Sports, backed by a self-owned Yahoo Developer OAuth2 app.",
+  "description": "MCP server for Yahoo Fantasy Sports — leagues, standings, rosters and matchups",
   "main": "src/index.js",
   "scripts": {
     "authorize": "node scripts/authorize.js",
@@ -14,5 +13,38 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.23.8"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "yahoo",
+    "fantasy-sports",
+    "oauth2"
+  ],
+  "license": "MIT",
+  "author": "Brett Adams",
+  "bin": {
+    "yahoo-fantasy-mcp": "src/index.js"
+  },
+  "files": [
+    "src",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brettadams0/yahoo-fantasy-mcp.git"
+  },
+  "homepage": "https://github.com/brettadams0/yahoo-fantasy-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/brettadams0/yahoo-fantasy-mcp/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
