@@ -37,6 +37,33 @@ npm run authorize    # one-time browser consent
 npm run check-auth   # verify the stored token still works
 ```
 
+## Setup
+
+Requires Node 20+.
+
+1. Create an app at [developer.yahoo.com/apps](https://developer.yahoo.com/apps/)
+   with **Fantasy Sports → Read** permission. Set the redirect URI to **OOB**
+   (out-of-band): Yahoo displays the code on screen instead of redirecting, so
+   there is no callback server to run.
+2. Save the id and secret to `credentials/client_secret.json` — see
+   `credentials/client_secret.example.json`. `credentials/` is git-ignored.
+3. Authorize and register:
+
+   ```bash
+   npm ci
+   npm run authorize
+   claude mcp add yahoo-fantasy -- node <path>/yahoo-fantasy-mcp/src/index.js
+   ```
+
+## Tests
+
+```bash
+npm test
+```
+
+Registration plus the OAuth constants that silently break consent if changed —
+notably the out-of-band redirect. No network and no credentials.
+
 ## Layout
 
 ```
