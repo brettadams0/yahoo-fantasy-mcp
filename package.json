@@ -1,0 +1,17 @@
+{
+  "name": "yahoo-fantasy-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal MCP server for Yahoo Fantasy Sports, backed by a self-owned Yahoo Developer OAuth2 app.",
+  "main": "src/index.js",
+  "scripts": {
+    "authorize": "node scripts/authorize.js",
+    "check-auth": "node scripts/check-token.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  }
+}
