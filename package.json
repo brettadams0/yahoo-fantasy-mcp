@@ -1,8 +1,8 @@
 {
-  "name": "@brettadams0/yahoo-fantasy-mcp",
+  "name": "yahoo-fantasy-mcp",
   "version": "1.0.0",
   "type": "module",
-  "description": "MCP server for Yahoo Fantasy Sports — leagues, standings, rosters and matchups",
+  "description": "MCP server for Yahoo Fantasy Sports \u2014 leagues, standings, rosters and matchups",
   "main": "src/index.js",
   "scripts": {
     "authorize": "node scripts/authorize.js",
@@ -44,7 +44,5 @@
   "bugs": {
     "url": "https://github.com/brettadams0/yahoo-fantasy-mcp/issues"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "private": true
 }

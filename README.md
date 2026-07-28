@@ -10,19 +10,6 @@ set lineups or make transactions.
 
 Runs over stdio, registered in `~/.claude.json` as `yahoo-fantasy`.
 
-## Install
-
-```bash
-claude mcp add yahoo-fantasy -- npx -y @brettadams0/yahoo-fantasy-mcp
-```
-
-You also need a Yahoo app and one run of `npm run authorize` (see Setup).
-
-Published as [`@brettadams0/yahoo-fantasy-mcp`](https://www.npmjs.com/package/@brettadams0/yahoo-fantasy-mcp).
-The scope is there because the unscoped name was already taken on npm by an
-unrelated package. Cloning this repo and pointing `claude mcp add` at
-`src/index.js` works identically.
-
 ## Tools
 
 | Tool | Purpose |
