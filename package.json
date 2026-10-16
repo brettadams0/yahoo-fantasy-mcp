@@ -1,18 +1,21 @@
 {
   "name": "yahoo-fantasy-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "MCP server for Yahoo Fantasy Sports \u2014 leagues, standings, rosters and matchups",
+  "description": "MCP server for Yahoo Fantasy Sports — leagues, standings, rosters and matchups",
   "main": "src/index.js",
   "scripts": {
     "authorize": "node scripts/authorize.js",
     "check-auth": "node scripts/check-token.js",
     "start": "node src/index.js",
-    "test": "node --test test/tools.test.js"
+    "test": "node --test test/tools.test.js",
+    "lint": "eslint .",
+    "surface": "mcp-surface node src/index.js --snapshot mcp-surface.json --fail-on warn",
+    "surface:update": "mcp-surface node src/index.js --snapshot mcp-surface.json --update-snapshot"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0",
-    "zod": "^3.23.8"
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^3.25.76"
   },
   "keywords": [
     "mcp",
@@ -44,5 +47,11 @@
   "bugs": {
     "url": "https://github.com/brettadams0/yahoo-fantasy-mcp/issues"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "mcp-surface": "^0.3.0"
+  }
 }

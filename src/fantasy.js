@@ -1,8 +1,24 @@
 import { z } from 'zod';
 import { yahooFetch } from './auth.js';
+import { json } from './shared.js';
 
-function json(data) {
-  return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+const KEY_SHAPES = {
+  game: { pattern: /^[a-z0-9]+$/i, example: '"nfl" or "423"' },
+  league: { pattern: /^[a-z0-9]+\.l\.\d+$/i, example: '"nfl.l.12345"' },
+  team: { pattern: /^[a-z0-9]+\.l\.\d+\.t\.\d+$/i, example: '"nfl.l.12345.t.3"' },
+};
+
+/**
+ * Check a Yahoo resource key before it goes into a path. The usual mistake is
+ * a league *name* or a bare id where a key belongs, which Yahoo answers with an
+ * opaque 400; this says what a key looks like instead.
+ */
+export function checkKey(kind, key) {
+  const { pattern, example } = KEY_SHAPES[kind];
+  if (!pattern.test(key)) {
+    throw new Error(`"${key}" is not a ${kind} key; expected the form ${example}.`);
+  }
+  return key;
 }
 
 // Yahoo's three key formats nest inside each other, and mixing them up is the
@@ -46,7 +62,7 @@ export function registerFantasyTools(server) {
       description: 'Lists the leagues the account belongs to for a given game key (e.g. "nfl", "nba", "mlb", "nhl", or a year-specific code).',
       inputSchema: { gameKey: GAME_KEY },
     },
-    async ({ gameKey }) => json(await yahooFetch(`/users;use_login=1/games;game_keys=${encodeURIComponent(gameKey)}/leagues`))
+    async ({ gameKey }) => json(await yahooFetch(`/users;use_login=1/games;game_keys=${checkKey('game', gameKey)}/leagues`))
   );
 
   server.registerTool(
@@ -57,7 +73,7 @@ export function registerFantasyTools(server) {
       description: 'Current standings for a league.',
       inputSchema: { leagueKey: LEAGUE_KEY },
     },
-    async ({ leagueKey }) => json(await yahooFetch(`/league/${encodeURIComponent(leagueKey)}/standings`))
+    async ({ leagueKey }) => json(await yahooFetch(`/league/${checkKey('league', leagueKey)}/standings`))
   );
 
   server.registerTool(
@@ -68,7 +84,7 @@ export function registerFantasyTools(server) {
       description: 'Scoring rules, roster positions, and other settings for a league.',
       inputSchema: { leagueKey: LEAGUE_KEY },
     },
-    async ({ leagueKey }) => json(await yahooFetch(`/league/${encodeURIComponent(leagueKey)}/settings`))
+    async ({ leagueKey }) => json(await yahooFetch(`/league/${checkKey('league', leagueKey)}/settings`))
   );
 
   server.registerTool(
@@ -79,7 +95,7 @@ export function registerFantasyTools(server) {
       description: "Matchup scores for a league, optionally for a specific week.",
       inputSchema: { leagueKey: LEAGUE_KEY, week: WEEK },
     },
-    async ({ leagueKey, week }) => json(await yahooFetch(`/league/${encodeURIComponent(leagueKey)}/scoreboard`, { query: { week } }))
+    async ({ leagueKey, week }) => json(await yahooFetch(`/league/${checkKey('league', leagueKey)}/scoreboard`, { query: { week } }))
   );
 
   server.registerTool(
@@ -90,7 +106,7 @@ export function registerFantasyTools(server) {
       description: 'Recent adds/drops/trades in a league.',
       inputSchema: { leagueKey: LEAGUE_KEY },
     },
-    async ({ leagueKey }) => json(await yahooFetch(`/league/${encodeURIComponent(leagueKey)}/transactions`))
+    async ({ leagueKey }) => json(await yahooFetch(`/league/${checkKey('league', leagueKey)}/transactions`))
   );
 
   server.registerTool(
@@ -101,7 +117,7 @@ export function registerFantasyTools(server) {
       description: 'Searches the player pool for a league by name.',
       inputSchema: { leagueKey: LEAGUE_KEY, query: z.string().describe('Player name or partial name to search for, e.g. "Mahomes".') },
     },
-    async ({ leagueKey, query }) => json(await yahooFetch(`/league/${encodeURIComponent(leagueKey)}/players`, { query: { search: query } }))
+    async ({ leagueKey, query }) => json(await yahooFetch(`/league/${checkKey('league', leagueKey)}/players`, { query: { search: query } }))
   );
 
   server.registerTool(
@@ -112,7 +128,7 @@ export function registerFantasyTools(server) {
       description: "A team's roster, optionally for a specific week.",
       inputSchema: { teamKey: TEAM_KEY, week: WEEK },
     },
-    async ({ teamKey, week }) => json(await yahooFetch(`/team/${encodeURIComponent(teamKey)}/roster`, { query: { week } }))
+    async ({ teamKey, week }) => json(await yahooFetch(`/team/${checkKey('team', teamKey)}/roster`, { query: { week } }))
   );
 
   server.registerTool(
@@ -123,7 +139,7 @@ export function registerFantasyTools(server) {
       description: "A team's full schedule of matchups and results for the season.",
       inputSchema: { teamKey: TEAM_KEY },
     },
-    async ({ teamKey }) => json(await yahooFetch(`/team/${encodeURIComponent(teamKey)}/matchups`))
+    async ({ teamKey }) => json(await yahooFetch(`/team/${checkKey('team', teamKey)}/matchups`))
   );
 
   server.registerTool(
@@ -133,8 +149,15 @@ export function registerFantasyTools(server) {
       annotations: { readOnlyHint: true, openWorldHint: true },
       description:
         'Escape hatch: GET any Yahoo Fantasy Sports API path (under /fantasy/v2/) not covered by a dedicated tool, e.g. "/league/{key}/draftresults". Read-only.',
-      inputSchema: { path: z.string().describe('Path after /fantasy/v2, must start with /') },
+      inputSchema: {
+        path: z
+          .string()
+          .describe('Path after /fantasy/v2, starting with "/", e.g. "/league/nfl.l.12345/draftresults". Paths outside /fantasy/v2/ are refused.'),
+      },
     },
-    async ({ path }) => json(await yahooFetch(path))
+    async ({ path }) => {
+      if (!path.startsWith('/')) throw new Error(`Path must start with "/", e.g. "/league/nfl.l.12345/draftresults".`);
+      return json(await yahooFetch(path));
+    }
   );
 }

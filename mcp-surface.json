@@ -1,0 +1,238 @@
+{
+  "capabilities": [
+    "tools"
+  ],
+  "prompts": [],
+  "resources": [],
+  "server": {
+    "name": "yahoo-fantasy",
+    "version": "1.1.0"
+  },
+  "snapshotVersion": 1,
+  "tools": [
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Escape hatch: GET any Yahoo Fantasy Sports API path (under /fantasy/v2/) not covered by a dedicated tool, e.g. \"/league/{key}/draftresults\". Read-only.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "description": "Path after /fantasy/v2, starting with \"/\", e.g. \"/league/nfl.l.12345/draftresults\". Paths outside /fantasy/v2/ are refused.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_fantasy_raw_get"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Scoring rules, roster positions, and other settings for a league.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "leagueKey": {
+            "description": "League key in the form \"<game>.l.<id>\", e.g. \"nfl.l.12345\". Get it from yahoo_get_my_leagues — it is not the league name or the numeric id alone.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leagueKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_league_settings"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Current standings for a league.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "leagueKey": {
+            "description": "League key in the form \"<game>.l.<id>\", e.g. \"nfl.l.12345\". Get it from yahoo_get_my_leagues — it is not the league name or the numeric id alone.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leagueKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_league_standings"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Recent adds/drops/trades in a league.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "leagueKey": {
+            "description": "League key in the form \"<game>.l.<id>\", e.g. \"nfl.l.12345\". Get it from yahoo_get_my_leagues — it is not the league name or the numeric id alone.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leagueKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_league_transactions"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Lists every fantasy sport/season (NFL, NBA, MLB, NHL, across years) the logged-in Yahoo account has played.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "properties": {},
+        "type": "object"
+      },
+      "name": "yahoo_get_my_games"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Lists the leagues the account belongs to for a given game key (e.g. \"nfl\", \"nba\", \"mlb\", \"nhl\", or a year-specific code).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "gameKey": {
+            "description": "Game key: a sport code like \"nfl\", \"nba\", \"mlb\", \"nhl\", or a season-specific numeric code like \"423\". Use yahoo_get_my_games to list valid values.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "gameKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_my_leagues"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Matchup scores for a league, optionally for a specific week.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "leagueKey": {
+            "description": "League key in the form \"<game>.l.<id>\", e.g. \"nfl.l.12345\". Get it from yahoo_get_my_leagues — it is not the league name or the numeric id alone.",
+            "type": "string"
+          },
+          "week": {
+            "description": "Week number within the season (1-based). Omit for the current week.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "leagueKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_scoreboard"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "A team's full schedule of matchups and results for the season.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "teamKey": {
+            "description": "Team key in the form \"<game>.l.<league id>.t.<team id>\", e.g. \"nfl.l.12345.t.3\". This is a league key with \".t.<team id>\" appended.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "teamKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_team_matchups"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "A team's roster, optionally for a specific week.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "teamKey": {
+            "description": "Team key in the form \"<game>.l.<league id>.t.<team id>\", e.g. \"nfl.l.12345.t.3\". This is a league key with \".t.<team id>\" appended.",
+            "type": "string"
+          },
+          "week": {
+            "description": "Week number within the season (1-based). Omit for the current week.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "teamKey"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_get_team_roster"
+    },
+    {
+      "annotations": {
+        "openWorldHint": true,
+        "readOnlyHint": true
+      },
+      "description": "Searches the player pool for a league by name.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "leagueKey": {
+            "description": "League key in the form \"<game>.l.<id>\", e.g. \"nfl.l.12345\". Get it from yahoo_get_my_leagues — it is not the league name or the numeric id alone.",
+            "type": "string"
+          },
+          "query": {
+            "description": "Player name or partial name to search for, e.g. \"Mahomes\".",
+            "type": "string"
+          }
+        },
+        "required": [
+          "leagueKey",
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "yahoo_search_league_players"
+    }
+  ]
+}
