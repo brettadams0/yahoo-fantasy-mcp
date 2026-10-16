@@ -39,7 +39,8 @@ async function main() {
       { access_token: data.access_token, refresh_token: data.refresh_token, expires_at: Date.now() + data.expires_in * 1000 },
       null,
       2
-    )
+    ),
+    { mode: 0o600 }
   );
   console.log(`Saved token to ${TOKEN_PATH}`);
 }
