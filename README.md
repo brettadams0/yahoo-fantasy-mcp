@@ -73,7 +73,7 @@ npm run authorize    # one-time browser consent
 npm run check-auth   # verify the stored token still works
 ```
 
-The token file is written owner-readable only.
+The token file is kept owner-readable only (0600).
 
 ## Setup
 

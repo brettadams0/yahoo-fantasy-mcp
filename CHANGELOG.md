@@ -22,7 +22,8 @@ recorded in [`mcp-surface.json`](mcp-surface.json).
   path of `/../../oauth2/…` (or its `%2e%2e` form), used to escape it with the
   bearer token attached.
 - `yahoo_fantasy_raw_get` enforces the leading `/` its description asks for.
-- The token file is written owner-readable only.
+- `credentials/token.json` is set to owner-only (0600) on every write,
+  including one left world-readable by 1.0.0.
 - Dependencies raised to clear every open `npm audit` advisory, including a
   critical one in `proxy-addr` and a high one in the MCP SDK's OAuth client.
 

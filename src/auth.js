@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { chmod, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fetchWithTimeout, responseError } from './shared.js';
@@ -38,20 +38,38 @@ export function basicAuthHeader(clientId, clientSecret) {
  * and the refresh itself are injected so this can be tested without
  * credentials or a network.
  */
+/**
+ * Write the token file readable by its owner only. `writeFile`'s `mode` applies
+ * only when it creates the file, so a token.json left at 0644 by an earlier
+ * version is tightened explicitly.
+ */
+export async function saveToken(token) {
+  await writeFile(TOKEN_PATH, JSON.stringify(token, null, 2), { mode: 0o600 });
+  await chmod(TOKEN_PATH, 0o600);
+}
+
 export function createTokenStore({ load, save, refresh, skewMs = 60_000 }) {
   let token = null;
+  let loading = null;
   let pending = null;
 
   return {
     async accessToken() {
-      token ??= await load();
+      // The first load is shared too, so a slow read can't put back a token
+      // another caller has already refreshed and spent. A failed load is not
+      // cached.
+      loading ??= load().catch((err) => {
+        loading = null;
+        throw err;
+      });
+      token ??= await loading;
       if (Date.now() >= token.expires_at - skewMs) {
         pending ??= (async () => {
           const next = await refresh(token);
-          // Persist before using it: the old refresh token is already dead, so
-          // a crash after this point must not leave only the old one on disk.
-          await save(next);
+          // The old refresh token is spent the moment Yahoo answers, so the
+          // new one is used from here on even if saving it fails.
           token = next;
+          await save(next);
         })().finally(() => {
           pending = null;
         });
@@ -78,6 +96,9 @@ async function refreshWithYahoo(current) {
   );
   if (!res.ok) throw await responseError(res, 'Yahoo token refresh', TOKEN_ENDPOINT);
   const data = await res.json();
+  if (typeof data.access_token !== 'string' || !Number.isFinite(data.expires_in)) {
+    throw new Error(`Yahoo token refresh failed: ${data.error ?? 'no access_token in the response'}`);
+  }
   return {
     access_token: data.access_token,
     refresh_token: data.refresh_token ?? current.refresh_token,
@@ -92,7 +113,7 @@ const tokens = createTokenStore({
     });
     return JSON.parse(raw);
   },
-  save: (token) => writeFile(TOKEN_PATH, JSON.stringify(token, null, 2), { mode: 0o600 }),
+  save: saveToken,
   refresh: refreshWithYahoo,
 });
 
